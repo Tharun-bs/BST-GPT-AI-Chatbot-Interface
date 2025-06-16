@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BST GPT</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .logo img, .main-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .brand-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .settings-btn {
+      background: transparent;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .settings-btn:hover {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .chat-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .main-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+
+    .main-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .main-subtitle {
+      color: #888;
+      font-size: 1.1rem;
+    }
+
+    /* Chat Interface */
+    .chat-interface {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .input-container {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .input-container:focus-within {
+      border-color: #667eea;
+      box-shadow: 0 0 0 1px #667eea;
+    }
+
+    .main-input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      width: 100%;
+      min-height: 60px;
+      resize: none;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .main-input::placeholder {
+      color: #666;
+    }
+
+    .input-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .file-upload-btn {
+      background: transparent;
+      border: 1px solid #333;
+      color: #888;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .file-upload-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .file-upload-btn input[type="file"] {
+      display: none;
+    }
+
+    .send-btn {
+      background: #667eea;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .send-btn:hover {
+      background: #5a6fd8;
+      transform: translateY(-1px);
+    }
+
+    .send-btn:disabled {
+      background: #333;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Response Section */
+    .response-section {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .response-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .response-content {
+      color: #e5e5e5;
+      line-height: 1.6;
+    }
+
+    /* History Section */
+    .history-section {
+      width: 100%;
+      max-width: 700px;
+      margin-top: 2rem;
+    }
+
+    .history-header {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .conversation-item {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .user-message {
+      color: #e5e5e5;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .user-label {
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .bot-message {
+      color: #e5e5e5;
+      line-height: 1.6;
+    }
+
+    .bot-label {
+      color: #667eea;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 2rem;
+    }
+
+    /* Loading State */
+    .loading {
+      opacity: 0.7;
+    }
+
+    .loading .send-btn {
+      background: #333;
+      cursor: not-allowed;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .main-title {
+        font-size: 2rem;
+      }
+
+      .main-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+
+      .input-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .send-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='BST.png') }}" alt="BST" class="logo">
+      <span class="brand-name">BST GPT</span>
+    </div>
+    <div class="header-actions">
+      <button class="settings-btn" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 10v6m11-7h-6m-10 0H1m15.5-5.5L19 7l-1.5-1.5M5 17l-1.5 1.5L5 20.5m0-15L3.5 3.5 5 5m14 14l1.5 1.5L19 19.5"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <img src="{{ url_for('static', filename='BST.png') }}" alt="BST GPT" class="main-logo">
+      <h1 class="main-title">BST GPT</h1>
+      <p class="main-subtitle">What do you want to know?</p>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-interface">
+      <form method="post" enctype="multipart/form-data" id="chatForm">
+        <div class="input-container">
+          <textarea 
+            name="query" 
+            class="main-input"
+            placeholder="Ask me anything..."
+            rows="3"
+            required
+          ></textarea>
+          
+          <div class="input-actions">
+            <label class="file-upload-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+              </svg>
+              <span id="fileLabel">Attach PDF</span>
+              <input type="file" name="pdf" accept=".pdf">
+            </label>
+            
+            <button type="submit" class="send-btn">
+              <span>Send</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Response Section -->
+      {% if reply %}
+        <div class="response-section">
+          <div class="response-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path>
+              <path d="M8 12h8m-4-4v8"></path>
+            </svg>
+            Response
+          </div>
+          <div class="response-content">{{ reply }}</div>
+        </div>
+      {% endif %}
+
+      <!-- History Section -->
+      {% if memory %}
+        <div class="history-section">
+          <div class="history-header">Recent Conversations</div>
+          {% for msg in memory %}
+            <div class="conversation-item">
+              <div class="user-message">
+                <div class="user-label">You</div>
+                <div>{{ msg.user }}</div>
+              </div>
+              <div class="bot-message">
+                <div class="bot-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path>
+                  </svg>
+                  BST GPT
+                </div>
+                <div>{{ msg.bot }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    // File upload handling
+    document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+      const label = document.getElementById('fileLabel');
+      if (e.target.files.length > 0) {
+        label.textContent = e.target.files[0].name;
+      } else {
+        label.textContent = 'Attach PDF';
+      }
+    });
+
+    // Form submission
+    document.getElementById('chatForm').addEventListener('submit', function() {
+      const form = this;
+      const sendBtn = form.querySelector('.send-btn');
+      const textarea = form.querySelector('textarea');
+      
+      if (!textarea.value.trim()) {
+        return false;
+      }
+      
+      form.classList.add('loading');
+      sendBtn.disabled = true;
+      sendBtn.querySelector('span').textContent = 'Sending...';
+    });
+
+    // Auto-resize textarea
+    document.querySelector('textarea').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+    });
+
+    // Focus on textarea when page loads
+    window.addEventListener('load', function() {
+      document.querySelector('textarea').focus();
+    });
+  </script>
+</body>
+</html>
