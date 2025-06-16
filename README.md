@@ -15,3 +15,5 @@ BST-GPT is a lightweight web-based chatbot interface built using Flask and HTML/
 - 📦 Ready for Backend Integration with GPT APIs (OpenAI, etc.)
 
 ---
+
+for model I used mistral-7b-instruct-v0.1.Q4_0 It is a heave model with 7 Billion parameters... You can use your model to your preference... save the model as .gguf file and in the path project-folder/models/your-model
